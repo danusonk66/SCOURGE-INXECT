@@ -23,7 +23,7 @@ const el = {
   zoneCenter: $("zone-center")
 };
 
-// เนื้อเรื่องตามที่คุณส่งมา
+// เนื้อเรื่องภาษาอังกฤษ
 const storyParagraphs = [
   "Let's imagine our protagonist is Charles, a villager living on the outskirts of City C, as the child of a local farmer. He lives at home with his parents—just the three of them: Charles, his father, and his mother.",
   "One morning, right as he was about to help out with the farm work, Charles fell ill with a high fever, became completely incapacitated, and passed out.",
@@ -65,6 +65,14 @@ function updateStats() {
 function spawnNPC() {
   if (npcQueue.length === 0) {
     clearWindow();
+    $("game").style.background = `url('Picture/Background.JPG') center/cover no-repeat`;
+    
+    // 👇 เพิ่มคำสั่งซ่อนกระดาษเอกสารและปุ่มกดตรงนี้ 👇
+    [el.docId, el.docHealth].forEach((d) => d.classList.add("is-hidden"));
+    const actionsDiv = document.getElementById("actions");
+    if (actionsDiv) actionsDiv.style.display = "none";
+    // --------------------------------------------------
+
     setRadio("All 8 visitors have been checked. Please press 'Finalize Inspection' for the final report.", true);
     return null;
   }
@@ -115,7 +123,7 @@ function loadDocuments(npc) {
 function clearWindow() {
   currentNPC = null;
   closeInspection();
-  $("game").style.background = `url('Picture/Background.JPG') center/cover no-repeat`; // เปลี่ยนมาใช้ฉากหลัง Background_2.jpg
+  $("game").style.background = `url('Picture/Background_2.JPG') center/cover no-repeat`;
 
   el.npcName.textContent = "";
   el.dlgBox.classList.remove("is-visible");
@@ -235,7 +243,7 @@ function gameAlert(msg, ok, cb, label = "OK") {
 
 function showRules() {
   const r = dailyRules[1];
-  el.rulesDate.textContent = ""; // เอาคำว่า Day 1 ออกตามที่ต้องการ
+  el.rulesDate.textContent = ""; 
   el.rulesText.innerHTML = r.html;
   el.rulesText.scrollTop = 0;
 }
@@ -247,27 +255,33 @@ const storyTextEl = document.getElementById("story-text");
 const btnStart = document.getElementById("btn-start");
 const btnNextStory = document.getElementById("btn-next-story");
 
-btnStart.addEventListener("click", () => {
-  startScreen.style.display = "none";
-  storyScreen.style.display = "flex";
-  showStoryParagraph();
-});
+if (btnStart) {
+  btnStart.addEventListener("click", () => {
+    if (startScreen) startScreen.style.display = "none";
+    if (storyScreen) storyScreen.style.display = "flex";
+    showStoryParagraph();
+  });
+}
 
 function showStoryParagraph() {
   if (currentStoryIndex < storyParagraphs.length) {
-    storyTextEl.textContent = storyParagraphs[currentStoryIndex];
+    if (storyTextEl) storyTextEl.textContent = storyParagraphs[currentStoryIndex];
   } else {
-    storyScreen.style.display = "none";
-    // เปลี่ยน Background ของเกมเป็น Background_2.jpg เมื่อเริ่มเล่น
-    $("game").style.background = "url('Picture/Background_2.JPG') center/cover no-repeat";
+    if (storyScreen) storyScreen.style.display = "none";
+    const gameMain = document.getElementById("game");
+    if (gameMain) {
+      gameMain.style.background = "url('Picture/Background_2.JPG') center/cover no-repeat";
+    }
     initGame();
   }
 }
 
-btnNextStory.addEventListener("click", () => {
-  currentStoryIndex++;
-  showStoryParagraph();
-});
+if (btnNextStory) {
+  btnNextStory.addEventListener("click", () => {
+    currentStoryIndex++;
+    showStoryParagraph();
+  });
+}
 
 [el.docId, el.docHealth].forEach((d) => {
   d.setAttribute("role", "button");
@@ -284,8 +298,9 @@ document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeInspe
 
 function initGame() {
   showRules();
+  const actionsDiv = document.getElementById("actions");
+  if (actionsDiv) actionsDiv.style.display = "flex";
   buildQueue();
   clearWindow();
   spawnNPC();
 }
-// ไม่เรียก initGame() อัตโนมัติ ปล่อยให้ผู้เล่นกดผ่านหน้า Start และ Story ก่อน
