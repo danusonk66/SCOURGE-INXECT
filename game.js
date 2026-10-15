@@ -115,7 +115,7 @@ function loadDocuments(npc) {
 function clearWindow() {
   currentNPC = null;
   closeInspection();
-  $("game").style.background = `url('Picture/Background_2.JPG') center/cover no-repeat`; // เปลี่ยนมาใช้ฉากหลัง Background_2.jpg
+  $("game").style.background = `url('Picture/Background.JPG') center/cover no-repeat`; // เปลี่ยนมาใช้ฉากหลัง Background_2.jpg
 
   el.npcName.textContent = "";
   el.dlgBox.classList.remove("is-visible");
