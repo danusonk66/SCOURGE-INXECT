@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Checkpoint 7 – Security Booth</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Rubik+Wet+Paint&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#0b0907; --soot:#15110e; --rust:#6b3a1f; --rust-lt:#9a5a2c; --iron:#2a2724;
+  --steel:#4a4843; --paper:#c9b98f; --paper-dk:#a39367; --blood:#5e0f0c;
+  --stamp-green:#2f6b3a; --stamp-red:#a1201a; --bulb:#ffb347; --ink:#241c14;
+  --typewriter:'Special Elite','Courier New',Courier,monospace;
+  --stencil:'Rubik Wet Paint',Impact,'Arial Narrow Bold',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--void);color:var(--paper);font-family:var(--typewriter);overflow:hidden;
+  display:flex;align-items:center;justify-content:center}
+
+#game{
+  position:relative;width:min(100vw,calc(100vh*16/9));aspect-ratio:16/9;
+  display:grid;grid-template-columns:1fr 1.7fr .9fr;gap:0;
+  font-size:clamp(9px,1.05vw,16px);
+  background: url('Picture/Background.JPG') center/cover no-repeat;
+  box-shadow:0 0 0 .5em #000;
+}
+#game::after{
+  display: none !important;
+}
+
+.zone{position:relative;overflow:hidden;min-width:0;min-height:0}
+.wall{ background: transparent !important; }
+.rust-drip::before{display:none}
+.blood{display:none !important;}
+.bulb{display:none !important;}
+.light-pool{display:none !important;}
+
+/* ======================= START & STORY SCREENS ======================= */
+#start-screen{
+  position:absolute; inset:0; z-index:100;
+  background: url('Picture/Startgame.jpg') center/cover no-repeat;
+  display:flex; flex-direction:column; align-items:center; justify-content:flex-end; padding-bottom:5em;
+}
+#story-screen{
+  position:absolute; inset:0; z-index:90;
+  /* ใส่รูปพื้นหลัง และทำฟิล์มสีดำโปร่งแสง 0.8 ทับเพื่อให้ตัวหนังสือเด่นและอ่านง่ายขึ้น */
+  background: linear-gradient(rgba(11,9,7,0.8), rgba(11,9,7,0.8)), url('Picture/Background.JPG') center/cover no-repeat !important;
+  display:none; flex-direction:column; align-items:center; justify-content:center;
+  padding:3em 6em; color:#e2d6b4; font-family:var(--typewriter); text-align:center;
+}
+#story-text{
+  font-size:1.3em; line-height:1.8; min-height:8em; margin-bottom:2em;
+}
+
+/* ======================= LEFT: RULES WALL ======================= */
+#zone-left{border-right:.6em solid transparent;display:flex;flex-direction:column;align-items:center;padding:4em 1.2em 1.2em;gap:1.4em}
+#rules-doc{
+  position:relative;width:100%;flex:1;min-height:0;padding:1.4em 1.2em;color:var(--ink);
+  background:
+    radial-gradient(circle at 85% 90%,rgba(94,15,12,.28),transparent 22%),
+    repeating-linear-gradient(0deg,transparent 0 1.55em,rgba(60,40,20,.12) 1.55em calc(1.55em + 1px)),
+    linear-gradient(#cdbd93,#b3a276);
+  transform:rotate(-1.2deg);box-shadow:.3em .5em 1em rgba(0,0,0,.7);overflow:hidden;
+}
+#rules-doc::before,#rules-doc::after{content:"";position:absolute;top:.5em;width:.9em;height:.9em;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#d44,#600);box-shadow:.1em .15em .2em rgba(0,0,0,.7)}
+#rules-doc::before{left:.8em} #rules-doc::after{right:.8em}
+.rules-header{text-align:center;border-bottom:2px solid var(--ink);padding:.6em 0 .5em;margin-bottom:.8em}
+.rules-title{font-family:var(--stencil);font-size:1.7em;letter-spacing:.04em;color:#3a0d0a}
+.rules-date{font-size:.85em;opacity:.8;margin-top:.2em}
+.rules-body{font-size:.95em;line-height:1.55;overflow-y:auto;max-height:calc(100% - 4.5em);padding-right:.3em}
+.rules-body h3{font-size:1em;margin:.7em 0 .25em;text-decoration:underline}
+.rules-body ul{padding-left:1.2em} .rules-body li{margin-bottom:.35em}
+.rules-body .rule-banned{color:#7a1410;font-weight:bold}
+.rules-stamp{position:absolute;right:.8em;bottom:.8em;border:3px solid rgba(120,20,16,.6);color:rgba(120,20,16,.6);
+  padding:.1em .5em;font-family:var(--stencil);transform:rotate(-14deg);font-size:1.1em}
+
+/* radio */
+#radio{position:relative;width:78%;flex:none;background:linear-gradient(#3b3731,#242119);border:2px solid #0d0b09;border-radius:.4em;
+  padding:.6em .7em;display:flex;align-items:center;gap:.8em;box-shadow:.2em .3em .6em rgba(0,0,0,.8)}
+#radio::before{content:"";position:absolute;top:-2.2em;right:1em;width:.25em;height:2.4em;background:#777;transform:rotate(12deg);transform-origin:bottom}
+.radio-speaker{width:3em;height:3em;border-radius:50%;flex:none;border:2px solid #0d0b09;
+  background:repeating-radial-gradient(circle,#111 0 2px,#2e2a25 2px 4px)}
+.radio-dial{width:1.8em;height:1.8em;border-radius:50%;background:conic-gradient(#555,#999,#555,#888,#555);border:2px solid #111;position:relative}
+.radio-dial::after{content:"";position:absolute;left:50%;top:10%;width:2px;height:40%;background:#111;transform:translateX(-50%) rotate(35deg);transform-origin:bottom}
+.radio-led{width:.6em;height:.6em;border-radius:50%;background:#7a1410;box-shadow:0 0 .6em #a22;margin-left:auto;align-self:flex-start}
+.radio-led.on{background:#4f4;box-shadow:0 0 .8em #4f4}
+.radio-msg{font-size:.7em;color:#9fb08a;flex:1;min-height:2.4em;line-height:1.3}
+
+/* ======================= CENTER: WINDOW + DESK ======================= */
+#zone-center{display:grid;grid-template-rows:1.15fr 1fr;background:transparent !important;}
+#window-area{position:relative;padding:2.2em 3em 0;background:transparent !important;}
+#window-frame{position:relative;height:100%;border:none;border-radius:0;
+  background:transparent !important;box-shadow:none;overflow:hidden}
+#window-frame::before{display:none;}
+.hallway{position:absolute;inset:0;background:transparent !important;}
+.hallway::before, .hallway::after{display:none;}
+.hall-bulb{display:none !important;}
+
+.npc-image{ display:none !important; }
+.npc-nameplate{position:absolute;left:.8em;top:.8em;z-index:7;font-size:.8em;background:rgba(0,0,0,.6);padding:.2em .6em;border-left:3px solid var(--rust-lt);min-height:1.6em}
+
+.dialogue-box{position:absolute;left:50%;bottom:1em;transform:translateX(-50%);width:84%;z-index:8;min-height:3.4em;
+  background:rgba(8,6,4,.88);border:1px solid var(--rust);padding:.6em .9em;font-size:.95em;line-height:1.45;color:#e2d6b4;
+  display:none}
+.dialogue-box.is-visible{display:block}
+.dialogue-box .speaker{color:var(--rust-lt);margin-right:.4em}
+
+.bars{display:none;}
+.glass{display:none;}
+.crack{display:none !important;}
+
+/* --- desk --- */
+#desk-area{position:relative;display:grid;grid-template-rows:auto 1fr auto;gap:.6em;padding:1.1em 1.6em 1em;
+  background:transparent !important;
+  border-top:none;box-shadow:none;}
+#desk-area::before{display:none;}
+.desk-label{position:relative;font-size:.75em;color:rgba(201,185,143,.75); text-shadow: 1px 1px 2px #000;}
+.desk-items{position:relative;display:flex;align-items:flex-start;justify-content:flex-start;margin-left:0.5em;gap:1.4em;min-height:0}
+
+/* documents */
+.doc{position:relative;color:var(--ink);padding:.8em .9em;font-size:0.9em;line-height:1.4;
+  background:linear-gradient(#cfc097,#b6a67a);box-shadow:.2em .35em .7em rgba(0,0,0,.7);cursor:grab;
+  transition:transform .15s,box-shadow .15s}
+.doc:hover{transform:translateY(-.3em) rotate(0deg)!important;box-shadow:.3em .6em 1em rgba(0,0,0,.8)}
+.doc-title{font-family:var(--stencil);font-size:1.05em;border-bottom:1.5px solid var(--ink);margin-bottom:.5em;padding-bottom:.2em}
+.doc-row{display:flex;gap:.4em;margin-bottom:.2em}
+.doc-label{opacity:.65;flex:none}
+.doc-value{font-weight:bold;word-break:break-word}
+.doc.is-empty .doc-value:empty::after{content:"________";opacity:.35}
+
+.doc-id{width:16.5em;transform:rotate(-3deg);display:grid;grid-template-columns:4.8em 1fr;gap:.7em}
+.doc-id .doc-title{grid-column:1/-1}
+.id-photo{width:4.6em;height:5.6em;border:2px solid var(--ink);background:#7d7358 var(--id-photo,none) center/cover;filter:grayscale(.6)}
+.doc-health{width:17.5em;transform:rotate(2.5deg)}
+.doc-health .doc-title::after{content:" ✚";color:#7a1410}
+.doc-stain::after{content:"";position:absolute;right:.6em;bottom:.4em;width:2.4em;height:2.4em;border-radius:50%;
+  background:radial-gradient(circle,rgba(94,15,12,.5),transparent 70%);pointer-events:none}
+.gas-mask{display:none !important;}
+
+/* action buttons */
+#actions{position:relative;display:flex;justify-content:center;gap:1.4em;padding-right:6em}
+.btn{font-family:var(--stencil);font-size:1.25em;letter-spacing:.06em;padding:.45em 1.1em;cursor:pointer;background:rgba(0,0,0,.15);
+  border:.18em solid;border-radius:.2em;transform:rotate(-2deg);position:relative;
+  text-shadow:0 0 1px currentColor;transition:transform .1s,background .15s,box-shadow .1s;
+  box-shadow:.15em .2em 0 rgba(0,0,0,.7)}
+.btn:hover{transform:rotate(-2deg) scale(1.06);box-shadow:.2em .3em 0 rgba(0,0,0,.7)}
+.btn:active{transform:rotate(-2deg) translateY(.15em) scale(.98);box-shadow:0 0 0 rgba(0,0,0,.7)}
+.btn:focus-visible{outline:3px dashed var(--bulb);outline-offset:.25em}
+.btn:disabled{opacity:.35;cursor:not-allowed;filter:grayscale(1)}
+.btn-approve{color:#5fbf72;border-color:var(--stamp-green);background:rgba(47,107,58,.8)}
+.btn-approve:hover{background:rgba(47,107,58,1)}
+.btn-reject{color:#e0564d;border-color:var(--stamp-red);background:rgba(161,32,26,.8);transform:rotate(1.5deg)}
+.btn-reject:hover{background:rgba(161,32,26,1);transform:rotate(1.5deg) scale(1.06)}
+.btn-reject:active{transform:rotate(1.5deg) translateY(.15em) scale(.98)}
+.btn-interrogate{color:#d9b25a;border-color:#8a6a1f;background:rgba(138,106,31,.8);font-size:1.05em;align-self:center;transform:rotate(-1deg)}
+.btn-interrogate:hover{background:rgba(138,106,31,1);transform:rotate(-1deg) scale(1.06)}
+.btn-interrogate:active{transform:rotate(-1deg) translateY(.15em) scale(.98)}
+
+/* ======================= RIGHT: SHELTER INTERIOR ======================= */
+#zone-right{
+  border-left:.6em solid transparent;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center; /* จัดให้อยู่กึ่งกลางแนวตั้งฝั่งขวา */
+  gap:1.4em;
+  padding:1.6em 1.4em;
+  background:transparent !important;
+}
+
+#sleep-door{
+  position:relative;width:100%;max-width:14em;min-height:14em;cursor:pointer;color:#cfc2a0;
+  font-family:var(--stencil);font-size:1.1em;line-height:1.2;text-align:center;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6em;padding:1em .6em;
+  border:.5em solid #0b0907;border-radius:.3em;
+  background:
+    radial-gradient(circle at 25% 80%,rgba(94,15,12,.8),transparent 25%),
+    repeating-linear-gradient(0deg,rgba(0,0,0,.5) 0 2px,transparent 2px 6px),
+    linear-gradient(90deg,#2b2926,#4a4640 45%,#34312c 55%,#232120);
+  box-shadow:inset 0 0 0 .3em #1b1917,inset 0 0 2em #000,0 0 2em rgba(0,0,0,.8);
+  transition:filter .2s,box-shadow .2s;
+}
+#sleep-door:hover{filter:brightness(1.18);box-shadow:inset 0 0 0 .3em #1b1917,inset 0 0 2em #000,0 0 2.2em rgba(255,150,50,.25)}
+.door-wheel{width:3.4em;height:3.4em;border-radius:50%;border:.35em solid #1a1816;position:relative;
+  background:radial-gradient(circle,#55524b 0 .5em,transparent .55em)}
+.door-wheel::before,.door-wheel::after{content:"";position:absolute;left:50%;top:50%;width:100%;height:.3em;background:#1a1816;transform:translate(-50%,-50%)}
+.door-wheel::after{transform:translate(-50%,-50%) rotate(90deg)}
+.door-plate{font-family:var(--typewriter);font-size:.55em;border:1px solid rgba(201,185,143,.4);padding:.15em .5em;opacity:.8}
+
+.is-hidden{display:none!important}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-.4em)}75%{transform:translateX(.4em)}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.game-alert{position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.85);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;font-family:var(--typewriter)}
+.ga-box{background:#14120f;border:.25em solid #4a4640;padding:2em 2.5em;text-align:center;color:#e2d6b4;font-size:16px;box-shadow:0 0 3em rgba(0,0,0,.9),inset 0 0 1.5em rgba(0,0,0,.8);max-width:90vw;max-height:90vh;overflow-y:auto}
+
+/* 🎨 ตกแต่งปุ่ม PLAY AGAIN ให้สวยงามโดดเด่นสไตล์อินดี้เซอร์ไววัล */
+.ga-box button{
+  margin-top:1.5em; 
+  font-family:var(--stencil); 
+  font-size:1.4em; 
+  letter-spacing:.08em;
+  padding:.5em 2.5em; 
+  background:linear-gradient(135deg, #8a4a27 0%, #5c2c16 100%); 
+  color:#f3e5ab;
+  border:.2em solid #b87333; 
+  border-radius:.3em; 
+  cursor:pointer;
+  text-shadow:0 0 3px rgba(0,0,0,0.9); 
+  box-shadow:0 4px 10px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.2);
+  transition:all 0.2s ease-in-out;
+}
+
+.ga-box button:hover{
+  background:linear-gradient(135deg, #a85c35, #70361b); 
+  border-color:#ffb347; 
+  color:#ffffff;
+  transform:translateY(-2px) scale(1.05); 
+  box-shadow:0 6px 15px rgba(255, 179, 71, 0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+}
+
+.ga-box button:active{
+  transform:translateY(1px) scale(0.98); 
+  box-shadow:0 2px 5px rgba(0,0,0,0.8);
+}
+
+.ga-box button:focus-visible{
+  outline:3px dashed var(--bulb); 
+  outline-offset:.25em;
+}
+</style>
+</head>
+<body>
+
+<main id="game">
+  <!-- 1. หน้าจอเริ่มเกม (Start Screen) -->
+  <div id="start-screen">
+    <button class="btn" id="btn-start" type="button" style="font-size:1.8em; padding:.5em 2em; background:rgba(94,15,12,0.9); color:#c9b98f; border-color:#6b3a1f; box-shadow:0 0 1em #000; cursor:pointer;">START GAME</button>
+  </div>
+
+  <!-- 2. หน้าจอเนื้อเรื่อง (Story Screen) -->
+  <div id="story-screen">
+    <div id="story-text"></div>
+    <button class="btn" id="btn-next-story" type="button" style="font-size:1.2em; padding:.4em 1.5em; background:rgba(47,107,58,0.8); color:#c9b98f; border-color:#2f6b3a; cursor:pointer;">NEXT</button>
+  </div>
+
+  <!-- ZONE LEFT: RULES -->
+  <section id="zone-left" class="zone wall rust-drip" aria-label="Shelter rules">
+    <article id="rules-doc">
+      <header class="rules-header">
+        <h2 class="rules-title">SHELTER RULES</h2>
+        <p class="rules-date" id="rules-date"></p>
+      </header>
+      <div class="rules-body" id="rules-text">
+        <h3>Infection symptoms</h3>
+        <ul>
+          <li>Anyone with a <span class="rule-banned">persistent cough</span> or visible dark veins must be turned away.</li>
+          <li>A body temperature above 38&deg;C suggests the early stage of infection.</li>
+        </ul>
+        <h3>Entry restrictions</h3>
+        <ul>
+          <li>Visitors are only admitted if their documents are valid and unexpired.</li>
+          <li>Nobody may bring weapons inside, regardless of their situation.</li>
+        </ul>
+      </div>
+      <div class="rules-stamp">OFFICIAL</div>
+    </article>
+
+    <aside id="radio" aria-label="Communication radio">
+      <div class="radio-speaker"></div>
+      <div class="radio-dial"></div>
+      <div class="radio-msg" id="radio-msg">&hellip;static&hellip;</div>
+      <span class="radio-led" id="radio-led"></span>
+    </aside>
+  </section>
+
+  <!-- ZONE CENTER: WINDOW + DESK -->
+  <section id="zone-center" class="zone" aria-label="Inspection booth">
+    <div id="window-area" class="wall">
+      <div id="window-frame">
+        <div class="hallway"></div>
+        <div class="npc-nameplate" id="npc-name"></div>
+        <div class="npc-image is-empty" id="npc-image" role="img" aria-label="Person requesting entry"></div>
+        <div class="dialogue-box" id="dialogue-box" aria-live="polite">
+          <span class="speaker" id="dialogue-speaker"></span><span id="dialogue-text"></span>
+        </div>
+        <div class="bars"></div>
+        <div class="crack"></div>
+        <div class="glass"></div>
+      </div>
+    </div>
+
+    <div id="desk-area">
+      <div class="desk-label">Submitted documents</div>
+      <div class="desk-items" id="desk-items">
+        <article class="doc doc-id is-empty" id="doc-id">
+          <h3 class="doc-title">IDENTITY CARD</h3>
+          <div class="id-photo" id="id-photo"></div>
+          <div class="doc-fields">
+            <div class="doc-row"><span class="doc-label">Name:</span><span class="doc-value" id="id-name"></span></div>
+            <div class="doc-row"><span class="doc-label">Born:</span><span class="doc-value" id="id-dob"></span></i></div>
+            <div class="doc-row"><span class="doc-label">Sector:</span><span class="doc-value" id="id-sector"></span></div>
+            <div class="doc-row"><span class="doc-label">Expires:</span><span class="doc-value" id="id-expiry"></span></div>
+          </div>
+        </article>
+
+        <article class="doc doc-health doc-stain is-empty" id="doc-health">
+          <h3 class="doc-title">HEALTH FORM</h3>
+          <div class="doc-row"><span class="doc-label">Temp:</span><span class="doc-value" id="hf-temp"></span></div>
+          <div class="doc-row"><span class="doc-label">Symptoms:</span><span class="doc-value" id="hf-symptoms"></span></div>
+          <div class="doc-row"><span class="doc-label">Last check:</span><span class="doc-value" id="hf-date"></span></div>
+          <div class="doc-row"><span class="doc-label">Notes:</span><span class="doc-value" id="hf-notes"></span></div>
+        </article>
+      </div>
+
+      <div id="actions">
+        <button class="btn btn-approve" id="btn-approve" type="button">APPROVE</button>
+        <button class="btn btn-interrogate" id="btn-interrogate" type="button">INTERROGATE</button>
+        <button class="btn btn-reject" id="btn-reject" type="button">REJECT</button>
+      </div>
+      <div class="gas-mask" aria-hidden="true"><span class="lens l"></span><span class="lens r"></span></div>
+    </div>
+  </section>
+
+  <!-- ZONE RIGHT: END GAME BUTTON -->
+  <section id="zone-right" class="zone wall" aria-label="Shelter interior">
+    <button id="sleep-door" type="button" aria-label="Finalize Inspection">
+      <span class="door-wheel" aria-hidden="true"></span>
+      <span>Finalize Inspection<br>(End Game)</span>
+      <span class="door-plate">AUTHORIZED STAFF</span>
+    </button>
+  </section>
+</main>
+
+<!-- เรียกใช้งานไฟล์ JavaScript -->
+<script src="npc-data.js" defer></script>
+<script src="game.js" defer></script>
+</body>
+</html>
