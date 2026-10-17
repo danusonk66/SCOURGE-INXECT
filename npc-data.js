@@ -44,7 +44,7 @@ const npcDatabase = [
         isInfected: true, 
         imageUrl: "Picture/Character FM/Character2/IMG_6934.JPG", 
         healthReport: { temp: "38.6°C", symptoms: "Persistent cough, Headache, High Fever", date: "10 DEC 2026", notes: "She have a history of chronic coughing since May." },
-        dialogue: ["i feel a bit headache. Can you treat me?"]
+        dialogue: ["i feel a bit headache. Can you treat me?", "Why are you Looking at me like that?...completely human...right?"]
       },
       { 
         isInfected: true, 
@@ -206,7 +206,7 @@ const npcDatabase = [
         isInfected: true, 
         imageUrl: "Picture/Character M/Character8/IMG_6987.JPG", 
         healthReport: { temp: "39.7°C", symptoms: "Visible dark veins on neck", date: "10/10/2026", notes: "Prominent dark veins on the neck." },
-        dialogue: ["This is police... let me in or I'm arrest you..."]
+        dialogue: ["This is police...", "let me in or I'm arrest you..."]
       }
     ]
   },
@@ -267,19 +267,17 @@ const npcDatabase = [
 /* ---------------------- 2. ข้อมูลกฎของเกมในแต่ละวัน (RULES) ---------------------- */
 const dailyRules = {
   1: { title: "",
-       html: `<h3>Infection symptoms</h3>
+       html: `<h3>Infection Symptoms</h3>
               <ul>
-                <li><span class="rule-banned">CRITICAL: Non-Human Appearance:</span> Anyone displaying clearly non-human physical</li>
-                <li>Anyone with a <span class="rule-banned">persistent cough</span> starting from <span class="rule-banned">May</span> that remains unresolved to this day shall be officially classified as an infected individual.</li>
-                <li>Anyone with a <span class="rule-banned">A body temperature above 38°C</span></li>
-                <li>Anyone with a <span class="rule-banned">visible dark veins must be turned away is strictly prohibited from entering under any circumstances.</span></li>
+                <li><span class="rule-banned">Non-human appearance (CRITICAL)</span></li>
+                <li>Body temperature: <span class="rule-banned">Above 38°C</span></li>
+                <li><span class="rule-banned">Visible dark veins</span></li>
+                <li><span class="rule-banned">Persistent cough</span></li>
               </ul>
-              <h3>Entry restrictions</h3>
+              <h3>Entry Restrictions</h3>
               <ul>
-                <li><span class="rule-banned">Symptom Screening:</span> Anyone displaying any physical anomalies or symptoms matching the official infection criteria must be turned away immediately.</li>
-                <li><span class="rule-banned">Origin Prohibition:</span> Individuals originating from <span class="rule-banned">City A or City C</span> are strictly denied entry under any circumstances.</li>
-                <li><span class="rule-banned">ID Verification:</span> The identification number must match official records <span class="rule-banned">exact to every single digit</span> with zero discrepancies.</li>
-                <li><span class="rule-banned">Date of Birth:</span> The applicant's date of birth must match the official visitor registry precisely.</li>
+                <li><span class="rule-banned">Symptom Screening:</span> Anyone displaying symptoms matching official infection criteria must be turned away immediately.</li>
+                <li><span class="rule-banned">Banned Origins:</span> Anyone from <span class="rule-banned">City A</span> or <span class="rule-banned">City C</span> is strictly denied entry.</li>
               </ul>` 
             }
         };

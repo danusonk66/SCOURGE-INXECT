@@ -23,6 +23,17 @@ const el = {
   zoneCenter: $("zone-center")
 };
 
+// 🎵 ตั้งค่าตัวแปร Music 🎵
+const bgmStart = document.getElementById("bgm-start");
+const bgmGame = document.getElementById("bgm-game");
+const bgmEnd = document.getElementById("bgm-end");
+
+function stopAllMusic() {
+  if(bgmStart) { bgmStart.pause(); bgmStart.currentTime = 0; }
+  if(bgmGame) { bgmGame.pause(); bgmGame.currentTime = 0; }
+  if(bgmEnd) { bgmEnd.pause(); bgmEnd.currentTime = 0; }
+}
+
 // เนื้อเรื่องภาษาอังกฤษ
 const storyParagraphs = [
   "Let's imagine our protagonist is Charles, a villager living on the outskirts of City C, as the child of a local farmer. He lives at home with his parents—just the three of them: Charles, his father, and his mother.",
@@ -67,11 +78,9 @@ function spawnNPC() {
     clearWindow();
     $("game").style.background = `url('Picture/Background.JPG') center/cover no-repeat`;
     
-    // 👇 เพิ่มคำสั่งซ่อนกระดาษเอกสารและปุ่มกดตรงนี้ 👇
     [el.docId, el.docHealth].forEach((d) => d.classList.add("is-hidden"));
     const actionsDiv = document.getElementById("actions");
     if (actionsDiv) actionsDiv.style.display = "none";
-    // --------------------------------------------------
 
     setRadio("All 8 visitors have been checked. Please press 'Finalize Inspection' for the final report.", true);
     return null;
@@ -205,6 +214,10 @@ function endDay() {
      return;
   }
 
+  // 🎵 หยุดเพลงเกม เล่นเพลงตอนจบฉาก 🎵
+  stopAllMusic();
+  if(bgmEnd) bgmEnd.play();
+
   let titleText = "";
   let isHappy = false;
   let endingImage = "";
@@ -225,9 +238,8 @@ function endDay() {
   `;
 
   gameAlert(endingHtml, isHappy, () => {
-    totalMistakes = 0;
-    stats = { admitted: 0, correct: 0, mistakes: 0 };
-    initGame();
+    // รีเฟรชหน้าเว็บเพื่อเริ่มเกมใหม่แบบเคลียร์ค่าทั้งหมด
+    window.location.reload();
   }, "PLAY AGAIN");
 }
 
@@ -255,10 +267,22 @@ const storyTextEl = document.getElementById("story-text");
 const btnStart = document.getElementById("btn-start");
 const btnNextStory = document.getElementById("btn-next-story");
 
+// 🎵 ให้เพลงหน้าจอเริ่มเกมดังขึ้นเมื่อผู้เล่นคลิกบนหน้าจอครั้งแรก 🎵
+document.body.addEventListener('click', () => {
+  if (startScreen && startScreen.style.display !== "none" && bgmStart && bgmStart.paused) {
+    bgmStart.play().catch(e => console.log("Autoplay blocked by browser"));
+  }
+}, { once: true });
+
 if (btnStart) {
   btnStart.addEventListener("click", () => {
     if (startScreen) startScreen.style.display = "none";
     if (storyScreen) storyScreen.style.display = "flex";
+    
+    // 🎵 ปิดเพลงหน้าแรก เปิดเพลงเกมตอนอ่านเนื้อเรื่องและเล่น 🎵
+    stopAllMusic();
+    if(bgmGame) bgmGame.play();
+
     showStoryParagraph();
   });
 }
@@ -298,8 +322,6 @@ document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeInspe
 
 function initGame() {
   showRules();
-  const actionsDiv = document.getElementById("actions");
-  if (actionsDiv) actionsDiv.style.display = "flex";
   buildQueue();
   clearWindow();
   spawnNPC();

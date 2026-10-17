@@ -45,7 +45,6 @@ body{background:var(--void);color:var(--paper);font-family:var(--typewriter);ove
 }
 #story-screen{
   position:absolute; inset:0; z-index:90;
-  /* ใส่รูปพื้นหลัง และทำฟิล์มสีดำโปร่งแสง 0.8 ทับเพื่อให้ตัวหนังสือเด่นและอ่านง่ายขึ้น */
   background: linear-gradient(rgba(11,9,7,0.8), rgba(11,9,7,0.8)), url('Picture/Background.JPG') center/cover no-repeat !important;
   display:none; flex-direction:column; align-items:center; justify-content:center;
   padding:3em 6em; color:#e2d6b4; font-family:var(--typewriter); text-align:center;
@@ -165,7 +164,7 @@ body{background:var(--void);color:var(--paper);font-family:var(--typewriter);ove
   display:flex;
   flex-direction:column;
   align-items:center;
-  justify-content:center; /* จัดให้อยู่กึ่งกลางแนวตั้งฝั่งขวา */
+  justify-content:center; 
   gap:1.4em;
   padding:1.6em 1.4em;
   background:transparent !important;
@@ -198,7 +197,6 @@ body{background:var(--void);color:var(--paper);font-family:var(--typewriter);ove
 .game-alert{position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.85);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;font-family:var(--typewriter)}
 .ga-box{background:#14120f;border:.25em solid #4a4640;padding:2em 2.5em;text-align:center;color:#e2d6b4;font-size:16px;box-shadow:0 0 3em rgba(0,0,0,.9),inset 0 0 1.5em rgba(0,0,0,.8);max-width:90vw;max-height:90vh;overflow-y:auto}
 
-/* 🎨 ตกแต่งปุ่ม PLAY AGAIN ให้สวยงามโดดเด่นสไตล์อินดี้เซอร์ไววัล */
 .ga-box button{
   margin-top:1.5em; 
   font-family:var(--stencil); 
@@ -236,18 +234,23 @@ body{background:var(--void);color:var(--paper);font-family:var(--typewriter);ove
 </head>
 <body>
 
+<!-- 🎵 ระบบเสียง Background Music 🎵 -->
+<audio id="bgm-start" src="Audio/start.mp3" loop></audio>
+<audio id="bgm-game" src="Audio/game.mp3" loop></audio>
+<audio id="bgm-end" src="Audio/end.mp3" loop></audio>
+
+<!-- 1. หน้าจอเริ่มเกม (Start Screen) -->
+<div id="start-screen">
+  <button class="btn" id="btn-start" type="button" style="font-size:1.8em; padding:.5em 2em; background:rgba(94,15,12,0.9); color:#c9b98f; border-color:#6b3a1f; box-shadow:0 0 1em #000; cursor:pointer;">START GAME</button>
+</div>
+
+<!-- 2. หน้าจอเนื้อเรื่อง (Story Screen) -->
+<div id="story-screen">
+  <div id="story-text"></div>
+  <button class="btn" id="btn-next-story" type="button" style="font-size:1.2em; padding:.4em 1.5em; background:rgba(47,107,58,0.8); color:#c9b98f; border-color:#2f6b3a; cursor:pointer;">NEXT</button>
+</div>
+
 <main id="game">
-  <!-- 1. หน้าจอเริ่มเกม (Start Screen) -->
-  <div id="start-screen">
-    <button class="btn" id="btn-start" type="button" style="font-size:1.8em; padding:.5em 2em; background:rgba(94,15,12,0.9); color:#c9b98f; border-color:#6b3a1f; box-shadow:0 0 1em #000; cursor:pointer;">START GAME</button>
-  </div>
-
-  <!-- 2. หน้าจอเนื้อเรื่อง (Story Screen) -->
-  <div id="story-screen">
-    <div id="story-text"></div>
-    <button class="btn" id="btn-next-story" type="button" style="font-size:1.2em; padding:.4em 1.5em; background:rgba(47,107,58,0.8); color:#c9b98f; border-color:#2f6b3a; cursor:pointer;">NEXT</button>
-  </div>
-
   <!-- ZONE LEFT: RULES -->
   <section id="zone-left" class="zone wall rust-drip" aria-label="Shelter rules">
     <article id="rules-doc">
@@ -302,7 +305,7 @@ body{background:var(--void);color:var(--paper);font-family:var(--typewriter);ove
           <div class="id-photo" id="id-photo"></div>
           <div class="doc-fields">
             <div class="doc-row"><span class="doc-label">Name:</span><span class="doc-value" id="id-name"></span></div>
-            <div class="doc-row"><span class="doc-label">Born:</span><span class="doc-value" id="id-dob"></span></i></div>
+            <div class="doc-row"><span class="doc-label">Born:</span><span class="doc-value" id="id-dob"></span></div>
             <div class="doc-row"><span class="doc-label">Sector:</span><span class="doc-value" id="id-sector"></span></div>
             <div class="doc-row"><span class="doc-label">Expires:</span><span class="doc-value" id="id-expiry"></span></div>
           </div>
@@ -336,7 +339,6 @@ body{background:var(--void);color:var(--paper);font-family:var(--typewriter);ove
   </section>
 </main>
 
-<!-- เรียกใช้งานไฟล์ JavaScript -->
 <script src="npc-data.js" defer></script>
 <script src="game.js" defer></script>
 </body>
